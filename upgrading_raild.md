@@ -59,7 +59,7 @@
 # Bundle update Rails
 
 * Railsのアップグレードの際にgemの掃除も行う
-* Railsのアップグレードで辛い事の多くはgemの更新(個人の感想です)なので、今後の事も考えて負担を減らしていく
+* Railsのアップグレードで辛い事の多くはgemの更新(個人の感想)なので、今後の事も考えて負担を減らしていく
 * 見直しをした結果、本当に必要なgemにだけ更新のPRを送る
   * それでも多いかもしれないが、そこは頑張る
 
@@ -106,8 +106,13 @@
 
 * public APIは一つのバージョンアップ(major, minor問わず)で挙動が変わる事は無い
   * public APIについては、必ず既存の挙動をdeprecationにしてから変えるようにしてる
-  * 一部例外あり。どうしても挙動が変わってしまうAPIについては、[A Guide for Upgrading Ruby on Rails](http://guides.rubyonrails.org/upgrading_ruby_on_rails.html) に載る(はず)
-* public APIの挙動が変わっていたらそれはバグなので、issue報告して下さい
+  * 一部例外あり
+
+---
+# public API / private API
+
+* どうしても挙動が変わってしまうAPIについては、[A Guide for Upgrading Ruby on Rails](http://guides.rubyonrails.org/upgrading_ruby_on_rails.html) に載る(はず)
+* それ以外のpublic APIの挙動が変わっていたらそれはバグなので、issue報告して下さい
 
 ---
 
@@ -142,7 +147,7 @@
 # Update config
 
 * テストが通ったら、新しいconfigを適用していく
-* 新しいconfigについては [RailsDiff](http://railsdiff.org/) を見る、手元で`rails new`してアプリを作ってみて既存のアプリとのdiffをとる、等をして確認すると良いと思います
+* 新しいconfigについては [RailsDiff](http://railsdiff.org/) を見る、手元で元のオプションと同じオプションを指定して`rails new`して既存のアプリとのdiffをとる、等をして確認すると良いと思います
 
 ---
 
@@ -150,7 +155,7 @@
 
 * `app:update`は使ってない
 * 色々と問題がある(`rails new`で指定したオプションを考慮しない、configのappendが出来ない等)
-  * 直したい気持ちはある(https://github.com/rails/rails/pull/29645)ので、多少は良くなっているかも
+  * 多少直したい気持ちはある([Do not generate unused components contents in `app:update` taskh](https://github.com/rails/rails/pull/29645))
 
 ---
 
@@ -168,7 +173,7 @@
 # Run test again
 
 * 再度テスト実行
-* ここエラーになるケースはそんなに多くない印象
+* ここエラーになる事はそんなに多くないはず
 
 ---
 
@@ -218,10 +223,33 @@
 
 ---
 
-# Finish
+# Finish {.big}
 
 後は震えながら本番にリリースするだけ
 
+---
+
+# After release
+
+* エラーが置きないか気にするのは当然として、性能劣化もチェックする
+* 出来ればリリース前にチェック出来ると良いのだが、性能確認する環境が無い場合はリリース後注視する
+
+---
+
+# After release
+
+* 性能劣化はちょいちょいおきる
+* 最近だと
+  * [Upgrading from Rails 5\.0\.0\.1 to 5\.0\.1 increases import from local CSV from 3 to 94 minutes](https://github.com/rails/rails/issues/27434)
+  * [5\.0\.0 \-> 5\.0\.1 mysql foreign\_keys is crazy slow](https://github.com/rails/rails/issues/27579)
+
+---
+
+# After release
+
+* Rails側でパフォーマンスチェックの為の仕組みが無い
+  * [RubyBench \- Long Running Ruby Benchmark](https://rubybench.org/rails/rails/releases) とかがあるが、公式には無い
+* これについてはアプリ側で意識するしか現状無い
 
 ---
 
@@ -229,7 +257,6 @@
 
 * Rails upgradingを行う際にやっていること・考えている事についてお話しました
 * 最近のRailsは、一つのバージョンアップで挙動が変わらないよう気をつけています
-* しかしそれでも、(予想外に)壊れる事は往々にしてあります
+* しかしそれでも、(予想外に)壊れる事は往々にしてあります.
 * 早めにアップグレードを試してみて、みんなでバグ踏んでいこうな
 
----
