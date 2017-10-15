@@ -1,6 +1,6 @@
 ---
 
-# Rails contribution
+# Rails コントリビューション
 
 ## @y-yagi
 
@@ -8,7 +8,7 @@
 
 # おしながき
 
-* Railsへのcontributeの仕方
+* Railsへのコントリビュートの仕方
 
 ---
 
@@ -23,7 +23,6 @@
 
 * Rails Contributors(http://contributors.rubyonrails.org)では26位(580コミット)
 * 最初のコミットが2014-07-15なので、contributeしはじめて約3年3ヶ月
-
 ---
 
 # Rails Contributors
@@ -95,7 +94,7 @@
 
 ---
 
-# Rails contribution
+# Rails コントリビューション
 
 ---
 
@@ -112,7 +111,7 @@
   * バグなのか仕様なのか難しい問題もある
 * SNSで文句を言ってても直らない
 * Issueをつくる or PRをつくる
-* Issueをつくるのも重要ななcontribute
+* Issueをつくるのも重要なcontribute
 
 ---
 
@@ -123,8 +122,14 @@
   * 具体的なユースケースを提示する等々
 
 ---
+# 筆者の場合
 
-# Rails contribution
+*
+
+
+---
+
+# Rails コントリビューション
 
 "contribute"には色々な方法は幾つかありますが、ここではGitHubでのissue / Pull requestについて取り扱います
 
@@ -165,6 +170,20 @@
 
 # Pull request
 
+---
+
+# Pull requsetを出すその前に
+
+* 似たようなPRがもう無いかGitHubで検索してみる
+  * OpenされているPRだけではなく、ClosedになっているPRも検索する
+* 同じようなPRがあって、それがMergeされる事無くCloseされているなら、何故Closeされてしまっているかちゃんと確認する
+* 理由を確認した上で、それでもPRを投げたいなら、PRのdescriptionにそのあたりの理由もちゃんと記載する
+* TODO: 例いれる
+
+---
+
+# Pull requset
+
 色々あるので、まずは概ねみんなやった方が良いのでは、という点から
 
 ---
@@ -184,7 +203,7 @@
   * 例: https://github.com/rails/rails/commit/88dc74b78468546748fdfdc4133e153efcc1f1c9
 * "\[skip ci\]" でも大丈夫
   * https://docs.travis-ci.com/user/customizing-the-build/#Skipping-a-build
-* RailsのCIは割と時間がかかるので、不要な場合はCIを実行しないようにするのが大変好まれる
+* RailsのCIは割と時間がかかるので、不要な場合はCIを実行しないようにする必要がある
 
 ---
 
@@ -192,11 +211,148 @@
 
 * 性能改善のPRの場合、 性能チェックに使ったスクリプト、及び結果をそのままコミットログに入れてしまう
   * 例：https://github.com/rails/rails/commit/338127869a4b62ddda5c75647ac1fb928361db70
-* こうしておくと後からこのコミットを見た人が直ぐ結果の再取得が出来てちょうべんり
+* コミットログに入れておくと、後からコミットを見た人が直ぐ結果の再取得が出来てちょうべんり
 
 ---
 
-# Rails contribution
+# Pull request
+
+* 適切な単位にcommitをsquashする
+  * rails/railsではPRは一つのcommitになっている事が望まれる
+  * Reviewの指摘対応のcommitもsquashして一つにする
+
+---
+
+# Pull request
+
+* コードを修正したらテストを実行するのを忘れずに
+* 予期せぬ箇所を壊してしまう事もあるので、必ずTravis CIでの結果を確認する
+
+---
+
+# Pull request
+
+ここからは個人的に気をつけていること
+
+---
+
+# Pull request
+
+* コミットログに説明が必要な事は全て入れてしまう
+  * PRのdescriptionに記載が必要な内容はコミットログに全部入れるようにしている
+* 後から何か確認したい時にコミットログを見れば済むので大変楽
+
+---
+
+# Pull request
+
+* 例 ffc4710c2bff273b82ddb76675701f986d82ef4f
+
+---
+
+# Pull request
+
+see also
+TODO: リンク
+
+---
+
+# Rails コントリビューション
 
 * contributeの方法について記載したRails guide(http://edgeguides.rubyonrails.org/contributing_to_ruby_on_rails.html) もあるので、合わせてご参照下さい
+
 ---
+
+# コントリビューションのはじめかた
+
+*
+
+---
+
+# コントリビューションのはじめかた
+
+* doc
+* Railsの公式のドキュメントは二つ
+* http://api.rubyonrails.org/ と http://guides.rubyonrails.org/
+
+---
+
+# コントリビューションのはじめかた
+
+* 普段から公式のドキュメント及びソースを見る癖をつける
+* ドキュメントは今は全て rails/rails で管理されているので、内容が間違えてる・フォーマットが崩れている等があればPRチャンス
+  * 割とよくある
+
+---
+
+# コントリビューションのはじめかた
+
+* 最新バージョンをちゃんと触る
+* 新しい機能はだいたいバグがある
+
+---
+
+# コントリビューションの壁
+---
+
+* 英語がつらい?
+* 私もつらい
+* コミットログを参考にする
+
+---
+
+# コミットログを参考にする
+
+* コミットログを適切そうな単語で検索してみる
+  * rails/railsには大量のコミットログがある
+  * rails/railsには大量のissue / PRもある
+* git log + pecoでlogを検索出来るようにしてる
+
+---
+
+# コントリビューションの壁
+
+* 何か怖い
+  * たまにきく
+* 普段やらない事や慣れていない事を不安に感じるのはしょうがない
+
+---
+
+# コントリビューションの壁
+
+* これについては慣れるしか無い　
+* 普段OSSにコントリビュートしている知り合いに協力してもらう等が出来ると良さそう
+* そういう知り合いがいない場合、OSS Gate(https://oss-gate.github.io) に参加してみるのも良いと思います
+
+---
+
+# まとめ
+
+---
+
+
+# Appendinx(時間があまったときよう)
+
+Rails 5.2つまみぐい
+
+---
+
+# Active Storage
+
+* ファイルアップロード処理用ライブラリ
+  * [carrierwave](https://github.com/carrierwaveuploader/carrierwave)
+  * [shrine](https://github.com/janko-m/shrine)
+* クラウドサービスに簡単にファイルをアップロード、及び、Active Recordから参照ができるようになっている。
+* 詳細は TODO: リンク　をみてね
+
+---
+
+# Early Hints for HTTP/2
+
+---
+
+# credentials.yml
+
+---
+
+# recyclable cache keys
