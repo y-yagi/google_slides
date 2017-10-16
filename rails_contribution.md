@@ -327,7 +327,6 @@
 
 ---
 
-
 # Appendinx(時間があまったときよう)
 
 Rails 5.2つまみぐい
@@ -337,19 +336,33 @@ Rails 5.2つまみぐい
 # Active Storage
 
 * ファイルアップロード処理用ライブラリ
-  * [carrierwave](https://github.com/carrierwaveuploader/carrierwave)
-  * [shrine](https://github.com/janko-m/shrine)
-* クラウドサービスに簡単にファイルをアップロード、及び、Active Recordから参照ができるようになっている。
-* 詳細は TODO: リンク　をみてね
+  * [carrierwave](https://github.com/carrierwaveuploader/carrierwave) や [shrine](https://github.com/janko-m/shrine) の仲間
+* クラウドサービスに簡単にファイルをアップロード、及び、Active Recordから参照ができるようになっている
+* [File Upload 2017](https://speakerdeck.com/willnet/file-upload-2017) に大変良くまとまっているので、詳細は左記参照
 
 ---
 
 # Early Hints for HTTP/2
 
+* https://github.com/rails/rails/pull/30744
+* HTTP/2のEarly Hints対応
+* 今のところはPumaじゃないと動かない
+
 ---
 
 # credentials.yml
 
+* https://github.com/rails/rails/pull/30067
+* 秘密情報を保持する為の新しい仕組み
+  * アプローチはEncrypted Secretsと同じ
+* `config/secrets.yml`、`config/secrets.yml.enc`、`SECRET_BASE_KEY`はお役御免
+
 ---
 
 # recyclable cache keys
+
+* https://github.com/rails/rails/pull/29092
+* fragments cachingのcache keyのフォーマットが再利用可能なフォーマットに変わる
+* 元々はcache keyにassocationのversion(timestamp)を含んでいたが、これは含まなくなる
+  * cache keyとcache versionが別に管理される
+  * version情報はcacheの中に入る
