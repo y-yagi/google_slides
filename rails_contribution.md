@@ -338,7 +338,7 @@ Rails 5.2つまみぐい
 * ファイルアップロード処理用ライブラリ
   * [carrierwave](https://github.com/carrierwaveuploader/carrierwave) や [shrine](https://github.com/janko-m/shrine) の仲間
 * クラウドサービスに簡単にファイルをアップロード、及び、Active Recordから参照ができるようになっている
-* [File Upload 2017](https://speakerdeck.com/willnet/file-upload-2017) に大変良くまとまっているので、詳細は左記参照
+* https://speakerdeck.com/willnet/file-upload-2017 に良くまとまっているので詳細は左記参照
 
 ---
 
