@@ -37,10 +37,5 @@
 
 ---
 
-# Web API
-
----
-
 # Conclusion
 
----
