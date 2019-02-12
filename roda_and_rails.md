@@ -2,7 +2,7 @@
 
 # Roda and Rails
 
-## y-yagi@Railsdm
+## y-yagi@Railsdm 2019
 
 ---
 
@@ -60,7 +60,7 @@ end
 * Sequel(DBアクセス用ライブラリ) author
 * OpenBSD Ruby ports maintainer
 * 他にも色々
-* bugs.ruby-lang.org にも割と良く出現している
+* bugs.ruby-lang.org にも良く出現している
 
 ---
 
@@ -68,34 +68,82 @@ end
 
 ---
 
-# Rails is slow(?)
+# Rails is slow?
 
 ---
 
 # Rails is slow?
 
-* ここからWeb Framework Benchmarks(https://www.techempower.com/benchmarks/)のはなし
+* (そもそも速度ってWebサービス毎に求められるものは違うしフレームワークの処理だけじゃなくネットワークやDB等の諸々考慮すべきだよね、みたいな話は一旦置いておいて)
+* Railsが遅い、という話は割と見る
+* 実際どうなんでしょうね
+
+---
+
+# Rails is slow?
+
+* TechEmpower社がおこなっているWeb Framework Benchmarks(https://www.techempower.com/benchmarks/) というベンチマークがあります
+* ここはRubyに限らず様々なプログラミング言語のWebアプリケーションのフレームワークのパフォーマンス比較を行っている
+  * ベンチマークは定期的に取得するようになっており最新(Round 17 / 2018-10-30)では、28のプログラミング言語 / 179のフレームワークを対象に実施
+* ベンチマークは複数のパターン(JSONを返す、データベースに対して1つSQLを実行する、等々)で実施されている
+  * データベース(MySQL、PostgreSQL、MongoDB、等々)やアプリケーションサーバも複数パターン(Puma、unicorn、等々)で行っている
+
+---
+
+# Web Framework Benchmarks
+
+* Full-stack frameworksだけじゃなくMicro frameworksも対象になっている
+  * そもそも素のRackもFrameworkに含まれている
+* その辺りも考慮して見てね
+* ベンチマークを取るのに使用したソースも公開されているので、興味がある方はそちらもどうぞ
+  * https://github.com/TechEmpower/FrameworkBenchmarks
+
+---
+
+# Web Framework Benchmarks
+
+* JSON serializationの結果を見てみると、Railsは290 / 328
+  * Rubyの中で最下位
+  * https://www.techempower.com/benchmarks/#section=data-r17&hw=cl&test=json&l=zijxtr-1
+* Roda(+ Sequel)は上位
+
+---
+
+# Roda is fast?
+
+* そもそも提供している機能が違うので単純に比較するべきではない
+* もちろんMicro frameworksだと速くなるというわけではないが
+  * DjangoとflaskだとDjangoの方が上にいたりする
 
 ---
 
 # Roda is fast?
 
 * Roda is à la carte
-* 自分で使う機能を選ぶ必要がある
+  * (これは筆者が勝手に呼んでいるだけで公式で名乗っている訳ではない)
+* Rodaのcoreは本当に最低限の機能しか提供しておらず自分で使う機能を選ぶ必要がある
+  * デフォルトだとテンプレートのレンダリングも出来ない
 
 ---
 
-# Roda is fast?
+# Plugin system
 
-* Rails is omakase
-  * 全部入り
+```ruby {style="font-size: 16p"}
+class MyTodo < Roda
+  plugin :csrf
+  plugin :assets, css: 'app.scss', css_opts: {style: :compressed, cache: false}, timestamp_paths: true
+  plugin :render, escape: true
 
+  # ...
+end
+```
 ---
 
-# Roda on Rails
+# Rails vs Roda
 
-* Railsはおまかせだけど、メニューは変更出来る
-* ならば、RailsのroutingにRodaを使ってみる、という事も出来る
+* デフォルトで全部入りのフレームワーク(Rails)とデフォルトで何も入っていないフレームワーク(Roda)を比較すればそれは勿論何も入ってない方がはやい
+* Railsはomakaseだけど、メニューは変えれる
+* 上手いことRailsでRodaを使えないか?
 
 ---
 
