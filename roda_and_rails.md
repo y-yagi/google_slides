@@ -80,21 +80,26 @@ end
 
 ---
 
-# Rails is slow?
+# Web Framework Benchmarks
 
-* TechEmpower社がおこなっているWeb Framework Benchmarks(https://www.techempower.com/benchmarks/) というベンチマークがあります
+* TechEmpower社がおこなっているWeb Framework Benchmarks(https://www.techempower.com/benchmarks/) というベンチマークがある
 * ここはRubyに限らず様々なプログラミング言語のWebアプリケーションのフレームワークのパフォーマンス比較を行っている
   * ベンチマークは定期的に取得するようになっており最新(Round 17 / 2018-10-30)では、28のプログラミング言語 / 179のフレームワークを対象に実施
-* ベンチマークは複数のパターン(JSONを返す、データベースに対して1つSQLを実行する、等々)で実施されている
-  * データベース(MySQL、PostgreSQL、MongoDB、等々)やアプリケーションサーバも複数パターン(Puma、unicorn、等々)で行っている
 
 ---
 
 # Web Framework Benchmarks
 
+* ベンチマークは複数のパターン(JSONを返す、データベースに対して1つSQLを実行する、等々)で実施されている
+  * データベース(MySQL、PostgreSQL、MongoDB、等々)やアプリケーションサーバも複数パターン(Puma、unicorn、等々)で行っている
 * Full-stack frameworksだけじゃなくMicro frameworksも対象になっている
   * そもそも素のRackもFrameworkに含まれている
-* その辺りも考慮して見てね
+  * その辺りも考慮して見てね
+
+---
+
+# Web Framework Benchmarks
+
 * ベンチマークを取るのに使用したソースも公開されているので、興味がある方はそちらもどうぞ
   * https://github.com/TechEmpower/FrameworkBenchmarks
 
@@ -201,77 +206,153 @@ end
 
 * URLとcontrollerのaction(というか、何らかの処理)と紐付けだけ出来れば良い
 * 多機能なRouterは不要なはず
+* それならRodaを使えないか?
 
 ---
 
-# そこでRoda
-
----
-
-# RouterにRodaを使ってみよう
+# 上手いことRodaの良い所をRailsに取り込めないか試してみよう
 
 ---
 
 # Roda on Rails
 
----
-
-# Roda on Rails
-
-* mountメソッドについての紹介
+* Rodaは当然Rackベース
+* Rackベースのアプリケーションなので`mount`メソッドを使えばRailsのroutingで使える
+  * doc参照 https://edgeapi.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-mount
 
 ---
 
-# Roda on Rails
+# Roda Application
 
-* controllerの場合の実装
+```ruby {style="font-size: 12p"}
+class RodaRoutes < Roda
+  # Rodaのrouting処理
+end
+```
+
+```ruby {style="font-size: 12p"}
+# routes.rb
+Rails.application.routes.draw do
+  post "/graphql", to: "graphql#execute"
+  mount RodaRoutes.freeze.app => "/roda"
+end
+```
 
 ---
 
-# Roda on Rails
+# GraphQL endpoint(Rails)
 
-* Rodaでの実装
+```ruby {style="font-size: 10p"}
+class GraphqlController < ApplicationController
+  def execute
+    variables = ensure_hash(params[:variables])
+    query = params[:query]
+    operation_name = params[:operationName]
+    context = { current_user: current_user }
+    result = BeholderSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+    render json: result
+  rescue => e
+    # ...
+  end
+end
+```
 
 ---
 
-# Roda on Rails
+# GraphQL endpoint(Roda)
 
-* 性能検証
+```ruby {style="font-size: 10p"}
+class RodaRoutes < Roda
+  plugin :json
+  plugin :json_parser
+  route do |r|
+    r.post "graphql" do
+      variables = ensure_hash(request.params["variables"])
+      query = request.params["query"]
+      operation_name = request.params["operationName"]
+      context = { current_user: current_user }
+      BeholderSchema.execute(query, variables: variables, context: context, operation_name: operation_name).to_h
+    rescue => e
+      # ...
+    end
+  end
+end
+```
 
 ---
 
 # 性能検証
 
-* benchmark-ipsのスクリプトはる
+* とりあえず動く状態になったので性能検証見てみよう
+* 今回はApache Benchを使用
+* concurrency: 10、requests: 20000
+* serverはproduction相当の設定で起動
+* CPU: Intel® Core™ M-5Y71 Processor (4M Cache, up to 2.90 GHz) 、メモリ: 8Gのマシンで検証
+
+---
+
+# 性能検証(スクリプト)
+
+```ruby {style="font-size: 16p"}
+auth_token = JWT.encode(payload, private_key, "RS256")
+
+File.write("ab_post", "query { repositories { id } }".to_json)
+script = <<EOS
+  ab -p ab_post -H 'Authorization: Bearer #{auth_token}' -c 10 -n 20000 http://localhost:3000/graphql
+EOS
+system(script)
+```
 
 ---
 
 # 性能検証
 
-* benchmark-ipsの結果はる
+**Rails result**
+
+``` {style="font-size: 14p"}
+Requests per second:    349.34 [#/sec] (mean)
+Time per request:       28.625 [ms] (mean)
+Time per request:       2.863 [ms] (mean, across all concurrent requests)
+Transfer rate:          98.59 [Kbytes/sec] received
+                        330.24 kb/s sent
+                        428.83 kb/s total
+```
+
+{.column}
+
+**Roda result**
+
+``` {style="font-size: 14p"}
+Requests per second:    467.87 [#/sec] (mean)
+Time per request:       21.373 [ms] (mean)
+Time per request:       2.137 [ms] (mean, across all concurrent requests)
+Transfer rate:          134.33 [Kbytes/sec] received
+                        444.57 kb/s sent
+                        578.90 kb/s total
+```
 
 ---
 
 # 性能検証
 
-* Apache Benchのスクリプトはる
+* RailsにそのままRodaをのっけただけでも多少速くなる
+* Pros
+  * 速くなる
+* Cons
+  * Controllerの処理を通らなくなるため、ログが出なくなる等挙動の違いはある
 
 ---
 
-# 性能検証
+# 他のパターンも試してみよう
 
-* Apache Benchの実行結果はる
-
----
-
-# 性能検証
-
-* ここまでのまとめ
-* Pros / Cons書く
+先のパターンでは、Railsのrouterはそのまま使用したが、そこを変えたらどうなる?
 
 ---
 
-# endpoint
+# RailsのRouting
+
+*
+
 
 ---
 
