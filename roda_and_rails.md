@@ -336,23 +336,58 @@ Transfer rate:          134.33 [Kbytes/sec] received
 # 性能検証
 
 * RailsにそのままRodaをのっけただけでも多少速くなる
-* Pros
-  * 速くなる
-* Cons
   * Controllerの処理を通らなくなるため、ログが出なくなる等挙動の違いはある
 
 ---
 
 # 他のパターンも試してみよう
 
-先のパターンでは、Railsのrouterはそのまま使用したが、そこを変えたらどうなる?
+先のパターンでは、Railsのrouterはそのまま使用したが、そこを変えたらどうなるか?
 
 ---
 
-# RailsのRouting
+# Rails application
 
-*
+* Rails applicationとしては、HTTP requestがくると
+* Rack Middlewareで処理を実施、最後にRouterで処理を行う
 
+---
+
+# Rails application
+
+![](http://drive.google.com/uc?export=view&id=1kOC6gbyTG9VLJRGpS5ohpNuVFymDv7an)
+
+---
+
+# Rails application
+
+* このRouter(実際のクラスは`ActionDispatch::Routing::RouteSet`)は実は差し替え可能
+  * 内部的には"endpoint"という表現を使用している
+
+---
+
+# Rails application
+
+```ruby {style="font-size: 12p"}
+# Returns the underlying Rack application for this engine.
+def app
+  @app || @app_build_lock.synchronize {
+    @app ||= begin
+      stack = default_middleware_stack
+      config.middleware = build_middleware.merge_into(stack)
+      config.middleware.build(endpoint)
+    end
+  }
+end
+
+# Returns the endpoint for this engine. If none is registered,
+# defaults to an ActionDispatch::Routing::RouteSet.
+def endpoint
+  self.class.endpoint || routes
+end
+```
+
+https://github.com/rails/rails/blob/870377915af301c98a54f7f588e077610b2190aa/railties/lib/rails/engine.rb#L503-L518
 
 ---
 
@@ -391,7 +426,6 @@ use Rack::ETag
 ---
 
 # Roda on Rails
-
 
 ---
 
