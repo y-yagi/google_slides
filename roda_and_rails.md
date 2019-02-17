@@ -342,14 +342,13 @@ Transfer rate:          134.33 [Kbytes/sec] received
 
 # 他のパターンも試してみよう
 
-先のパターンでは、Railsのrouterはそのまま使用したが、そこを変えたらどうなるか?
+先のパターンではRailsのrouterはそのまま使用したが、そこを変えたらどうなるか
 
 ---
 
 # Rails application
 
-* Rails applicationとしては、HTTP requestがくると
-* Rack Middlewareで処理を実施、最後にRouterで処理を行う
+* Rails applicationとしては、HTTP requestがくるとRack Middlewareで処理を実施、最後にRouterで処理を行う
 
 ---
 
@@ -391,18 +390,45 @@ https://github.com/rails/rails/blob/870377915af301c98a54f7f588e077610b2190aa/rai
 
 ---
 
+# endpoint
+
+```
+# config/application.rb
+class Application < Rails::Application
+  endpoint RodaRoutes.freeze.app
+  # ...
+end
+```
+---
+
+# endpoint
+
+* このアプローチではあまり速くならなかった
+  * `mount`を使った場合と同じ程度の速度
+
+---
+
+# 最後にもうひとつ別のアプローチ
+
+---
+
 # Rack Middlewares
 
-* Rails.applicationはRack application
+---
+
+# Rack Middlewares
+
+* Railsアプリケーションは様々なRack Middlewaresを使用している
+* 使用しているmiddlewareの一覧は`rails middleware`で確認出来る
 
 ---
 
 # Rack Middlewares(API-only)
 
-```
+``` {style="font-size: 10p"}
+$ RAILS_ENV=production  ./bin/rails middleware
 use ActionDispatch::HostAuthorization
 use Rack::Sendfile
-use ActionDispatch::Static
 use ActionDispatch::Executor
 use ActiveSupport::Cache::Strategy::LocalCache::Middleware
 use Rack::Runtime
@@ -411,9 +437,7 @@ use ActionDispatch::RemoteIp
 use Rails::Rack::Logger
 use ActionDispatch::ShowExceptions
 use ActionDispatch::DebugExceptions
-use ActionDispatch::Reloader
 use ActionDispatch::Callbacks
-use ActiveRecord::Migration::CheckPending
 use Rack::Head
 use Rack::ConditionalGet
 use Rack::ETag
@@ -421,11 +445,82 @@ use Rack::ETag
 
 ---
 
-# config.ru
+# Rack Middlewares
+
+* 色々ある
+* しかし要らないmiddlewareもあるのでは
+  * 例えば`Rack::Sendfile`はX-Sendfile header設定する為のmiddlewareだが、ファイルアップロード処理が無いアプリケーションなら要らないよね
 
 ---
 
-# Roda on Rails
+# Rack Middlewares
+
+使わないMiddlewareは個別に削除出来る
+
+```
+# config/application.rb
+class Application < Rails::Application
+  config.middleware.delete Rack::Sendfile
+  # ...
+end
+```
+
+---
+
+# Rails application
+
+* RodaにもRack middlewareを指定する機能はある
+* Rodaで必要なRack middlewareだけを個別に指定すれば、そもそもRequestの処理にRails applicationは不要なのでは?
+  * 勿論Railsで使う事を前提としているmiddlewareはそのままでは使えない
+
+---
+
+# config.ru
+
+```diff
+# This file is used by Rack-based servers to start the application.
+
+require_relative 'config/environment'
+
+- run Rails.application
++ run RodaRoutes.freeze.app
+```
+
+---
+
+# Roda
+
+```
+class RodaRoutes < Roda
+  use Rack::JWT::Auth
+  use ActionDispatch::RequestId
+  use Rails::Rack::Logger, Rails.application.config.log_tags
+end
+```
+
+---
+
+# 性能検証
+
+**Rails result**
+
+``` {style="font-size: 14p"}
+Requests per second:    349.34 [#/sec] (mean)
+Time per request:       28.625 [ms] (mean)
+Time per request:       2.863 [ms] (mean, across all concurrent requests)
+```
+
+{.column}
+
+**Roda result(今回の結果)**
+
+``` {style="font-size: 14p"}
+Requests per second:    595.30 [#/sec] (mean)
+Time per request:       16.798 [ms] (mean)
+Time per request:       1.680 [ms] (mean, across all concurrent requests)
+```
+
+---
 
 ---
 
