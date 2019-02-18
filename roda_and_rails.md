@@ -17,7 +17,6 @@
 
 * Rodaというフレームワークについての紹介
 * Railsをお使い(であろう)皆さんへのRodaのすゝめ
-* 何でRoda?
 
 ---
 
@@ -117,7 +116,7 @@ end
 # Roda is fast?
 
 * そもそも提供している機能が違うので単純に比較するべきではない
-* もちろんMicro frameworksだと速くなるというわけではないが
+* もちろんMicro frameworksだと速くなる、というわけではないが
   * DjangoとflaskだとDjangoの方が上にいたりする
 
 ---
@@ -136,7 +135,6 @@ end
 ```ruby {style="font-size: 16p"}
 class MyTodo < Roda
   plugin :csrf
-  plugin :assets, css: 'app.scss', css_opts: {style: :compressed, cache: false}, timestamp_paths: true
   plugin :render, escape: true
 
   # ...
@@ -146,7 +144,7 @@ end
 
 # Rails vs Roda
 
-* デフォルトで全部入りのフレームワーク(Rails)とデフォルトで何も入っていないフレームワーク(Roda)を比較すればそれは勿論何も入ってない方がはやい
+* デフォルトで全部入りのフレームワーク(Rails)とデフォルトで何も入っていないフレームワーク(Roda)を比較すればそれは勿論何も入ってない方が速い
 * Railsはomakaseだけど、メニューは変えれる
 * 上手いことRailsでRodaを使えないか?
 
@@ -522,17 +520,8 @@ Time per request:       1.680 [ms] (mean, across all concurrent requests)
 
 ---
 
----
-
-# Rails way?
-
-* これは「Rails way」から外れている?
-* そもそも何をやったらRails wayから外れる事になるんでしょうね
-* 色々定義はあると思いますが、私の中では「RailsのPublic APIのみを使っているかどうか」がポイント
-* 今回の話だと`mount`も`endpoint`もPublic APIなので、問題無い(と私は思っている)
-
----
-
-# Conclusion
+# まとめ
 
 * Rails is omakase
+* とはいえメニューは変えられる
+* 自分達のアプリケーションに合わせて、適切にメニューを選べるようになると、それはそれで便利で良いんじゃないでしょうか
