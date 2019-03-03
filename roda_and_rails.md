@@ -30,7 +30,7 @@
 * Webアプリを作る為のフレームワーク
   * MVCにおけるView / Controller部分のみを提供
   * routing / controllerを定義するDSL的なもの
-* Sinatraの仲間
+* RailsというよりSinatraの仲間
   * Sinatraと違い階層構造(木構造)でroutingを定義出来る
 
 ---
@@ -58,8 +58,24 @@ end
 * 作者は Jeremy Evans(@jeremyevans) https://github.com/jeremyevans
 * Sequel(DBアクセス用ライブラリ) author
 * OpenBSD Ruby ports maintainer
-* 他にも色々
-* bugs.ruby-lang.org にも良く出現している
+* Rails的にはErubi(ERB Handler)
+* bugs.ruby-lang.org にも良く出現されてる
+
+---
+
+# Jeremy Evans
+
+![](http://drive.google.com/uc?export=view&id=1ZW030sbr-LC1riwFSqAVM3ejjs1b-IAw)
+
+https://rubykaigi.org/2019/speakers
+
+---
+
+# Jeremy Evans
+
+![](http://drive.google.com/uc?export=view&id=1NYtjgWwgdPNawDhL0xBlZxEyDHZkFTQa)
+
+https://rubykaigi.org/2019/presentations/jeremyevans0.html#apr20
 
 ---
 
@@ -67,15 +83,26 @@ end
 
 ---
 
-# Rails is slow?
+# Roda is fast
+
+* Rodaは特徴の1つに他のフレームワークと比べて、速いというのがある
+
+---
+
+# Roda is fast
+
+![](http://drive.google.com/uc?export=view&id=13KekYhxZ82d9S1bQNVVx7Lgy7RiqAP__)
+
+http://roda.jeremyevans.net/
 
 ---
 
 # Rails is slow?
 
 * (そもそも速度ってWebサービス毎に求められるものは違うしフレームワークの処理だけじゃなくネットワークやDB等の諸々考慮すべきだよね、みたいな話は一旦置いておいて)
-* Railsが遅い、という話は割と見る
-* 実際どうなんでしょうね
+* 上のベンチマークは[luislavena/bench-micro](https://github.com/luislavena/bench-micro)の結果
+* これだけみるとRails遅そうっすね
+* 他のベンチマークも見てみたい
 
 ---
 
@@ -124,9 +151,10 @@ end
 # Roda is fast?
 
 * Roda is à la carte
-  * (これは筆者が勝手に呼んでいるだけで公式で名乗っている訳ではない)
-* Rodaのcoreは本当に最低限の機能しか提供しておらず自分で使う機能を選ぶ必要がある
+  * (これは私が勝手に呼んでいるだけで公式で名乗っている訳ではない)
+* Rodaのcoreは本当に最低限の機能しか提供していない
   * デフォルトだとテンプレートのレンダリングも出来ない
+* 代わりに各種機能をpluginとして提供しており、使用する側で必要なpluginを選択する必要がある
 
 ---
 
@@ -181,7 +209,7 @@ RailsのRouterが提供している機能について考えてみる
 
 ---
 
-# GraphQL
+# 例えばGraphQL
 
 * POSTのエンドポイント一個あれば良い
 
@@ -196,7 +224,6 @@ Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
 end
 ```
-
 
 ---
 
