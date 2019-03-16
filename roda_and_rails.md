@@ -170,21 +170,21 @@ end
 ```
 ---
 
-# Rails vs Roda
+# Rails and Roda
 
-* デフォルトで全部入りのフレームワーク(Rails)とデフォルトで何も入っていないフレームワーク(Roda)を比較すればそれは勿論何も入ってない方が速い
-* Railsはomakaseだけど、メニューは変えれる
-* 上手いことRailsでRodaを使えないか?
+* デフォルトで全部入りのフレームワーク(Rails)とデフォルト最小構成のフレームワーク(Roda)を比較すればそれは勿論最小構成の方が速い
+* しかし速いのは良い事だよね
+* 上手いことRailsとRodaを組み合わせらないか?
 
 ---
 
 # Rails Router{.big}
 
-RailsのRouterが提供している機能について考えてみる
+Rodaは"Routing Tree Web Framework Toolkit"なので、Routingについて考えてみる
 
 ---
 
-# Rails Router
+# RailsのRouter
 
 * URLとcontrollerのactionとのマッピング
 * pathとURLのhelper
@@ -202,16 +202,10 @@ RailsのRouterが提供している機能について考えてみる
 
 # 今はどうだろうね
 
-* 元々の役割は変わらずある
-  * ただ、それだけではないよね
+* 元々の役割は変わらずあるが、それだけではなくなった
 * SPAアプリの場合、サーバ側はAPIだけで良い事もある
   * その場合、そこまで複雑なRoutingが必要ではない
-
----
-
-# 例えばGraphQL
-
-* POSTのエンドポイント一個あれば良い
+* 例えばGraphQLの場合、POSTのエンドポイント一個あれば良い
 
 ---
 
@@ -230,20 +224,16 @@ end
 # GraphQL
 
 * URLとcontrollerのaction(というか、何らかの処理)と紐付けだけ出来れば良い
-* 多機能なRouterは不要なはず
+* 多機能なRouterは不要そう
 * それならRodaを使えないか?
-
----
-
-# 上手いことRodaの良い所をRailsに取り込めないか試してみよう
 
 ---
 
 # Roda on Rails
 
 * Rodaは当然Rackベース
-* Rackベースのアプリケーションなので`mount`メソッドを使えばRailsのroutingで使える
-  * doc参照 https://edgeapi.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-mount
+* Rackベースのアプリケーション`mount`メソッドを使えばRailsのroutingで使える
+  * https://edgeapi.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-mount
 
 ---
 
@@ -308,25 +298,11 @@ end
 
 # 性能検証
 
-* とりあえず動く状態になったので性能検証見てみよう
-* 今回はApache Benchを使用
-* concurrency: 10、requests: 20000
-* serverはproduction相当の設定で起動
+* とりあえず動く状態になったので性能検証してみよう
+* ベンチマークツールは wrk(https://github.com/wg/wrk)を使用
+  * Rails / Roda両方のエンドポイントに対してGraphQLのリクエストを実施
+* 10 threads / 100 connectionsで30s
 * CPU: Intel® Core™ M-5Y71 Processor (4M Cache, up to 2.90 GHz) 、メモリ: 8Gのマシンで検証
-
----
-
-# 性能検証(スクリプト)
-
-```ruby {style="font-size: 16p"}
-auth_token = JWT.encode(payload, private_key, "RS256")
-
-File.write("ab_post", "query { repositories { id } }".to_json)
-script = <<EOS
-  ab -p ab_post -H 'Authorization: Bearer #{auth_token}' -c 10 -n 20000 http://localhost:3000/graphql
-EOS
-system(script)
-```
 
 ---
 
@@ -335,12 +311,13 @@ system(script)
 **Rails result**
 
 ``` {style="font-size: 14p"}
-Requests per second:    349.34 [#/sec] (mean)
-Time per request:       28.625 [ms] (mean)
-Time per request:       2.863 [ms] (mean, across all concurrent requests)
-Transfer rate:          98.59 [Kbytes/sec] received
-                        330.24 kb/s sent
-                        428.83 kb/s total
+  10 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    26.20ms    7.52ms  73.32ms   73.87%
+    Req/Sec   191.41     16.16   222.00     73.75%
+  5744 requests in 30.09s, 2.93MB read
+Requests/sec:    190.89
+Transfer/sec:     99.55KB
 ```
 
 {.column}
@@ -348,20 +325,20 @@ Transfer rate:          98.59 [Kbytes/sec] received
 **Roda result**
 
 ``` {style="font-size: 14p"}
-Requests per second:    467.87 [#/sec] (mean)
-Time per request:       21.373 [ms] (mean)
-Time per request:       2.137 [ms] (mean, across all concurrent requests)
-Transfer rate:          134.33 [Kbytes/sec] received
-                        444.57 kb/s sent
-                        578.90 kb/s total
+  10 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    21.76ms    5.81ms  60.93ms   76.23%
+    Req/Sec   230.66     16.43   260.00     79.07%
+  6916 requests in 30.10s, 1.89MB read
+Requests/sec:    229.78
+Transfer/sec:     64.18KB
 ```
 
 ---
 
 # 性能検証
 
-* RailsにそのままRodaをのっけただけでも多少速くなる
-  * Controllerの処理を通らなくなるため、ログが出なくなる等挙動の違いはある
+* RailsにそのままRodaのっけただけでも多少速くなる
 
 ---
 
@@ -371,9 +348,10 @@ Transfer rate:          134.33 [Kbytes/sec] received
 
 ---
 
-# Rails application
+# Railsアプリケーション
 
-* Rails applicationとしては、HTTP requestがくるとRack Middlewareで処理を実施、最後にRouterで処理を行う
+* RailsアプリケーションもまたRackアプリケーション
+* Railsアプリケーションは、HTTP requestがくるとRack Middlewareで処理を実施し、最後にRouterで処理を行う
 
 ---
 
@@ -385,7 +363,7 @@ Transfer rate:          134.33 [Kbytes/sec] received
 
 # Rails application
 
-* このRouter(実際のクラスは`ActionDispatch::Routing::RouteSet`)は実は差し替え可能
+* このRouter(実際のクラスは`ActionDispatch::Routing::RouteSet`)は差し替え可能
   * 内部的には"endpoint"という表現を使用している
 
 ---
@@ -428,12 +406,9 @@ end
 
 # endpoint
 
-* このアプローチではあまり速くならなかった
+* 結論からいうとこのアプローチではあまり速くならなかった
   * `mount`を使った場合と同じ程度の速度
-
----
-
-# 最後にもうひとつ別のアプローチ
+* 次行ってみよう
 
 ---
 
@@ -495,16 +470,13 @@ end
 # Rails application
 
 * RodaにもRack middlewareを指定する機能はある
-* Rodaで必要なRack middlewareだけを個別に指定すれば、そもそもRequestの処理にRails applicationは不要なのでは?
-  * 勿論Railsで使う事を前提としているmiddlewareはそのままでは使えない
+* Rodaで必要なRack middlewareだけを個別に指定すれば、そもそもRequestの処理にRailsアプリケーションは不要なのでは?
 
 ---
 
 # config.ru
 
 ```diff
-# This file is used by Rack-based servers to start the application.
-
 require_relative 'config/environment'
 
 - run Rails.application
@@ -519,7 +491,8 @@ require_relative 'config/environment'
 class RodaRoutes < Roda
   use Rack::JWT::Auth
   use ActionDispatch::RequestId
-  use Rails::Rack::Logger, Rails.application.config.log_tags
+
+  # ...
 end
 ```
 
@@ -530,9 +503,12 @@ end
 **Rails result**
 
 ``` {style="font-size: 14p"}
-Requests per second:    349.34 [#/sec] (mean)
-Time per request:       28.625 [ms] (mean)
-Time per request:       2.863 [ms] (mean, across all concurrent requests)
+  10 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    26.20ms    7.52ms  73.32ms   73.87%
+    Req/Sec   191.41     16.16   222.00     73.75%
+  5744 requests in 30.09s, 2.93MB read
+Requests/sec:    190.89
 ```
 
 {.column}
@@ -540,9 +516,13 @@ Time per request:       2.863 [ms] (mean, across all concurrent requests)
 **Roda result(今回の結果)**
 
 ``` {style="font-size: 14p"}
-Requests per second:    595.30 [#/sec] (mean)
-Time per request:       16.798 [ms] (mean)
-Time per request:       1.680 [ms] (mean, across all concurrent requests)
+  10 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    17.85ms    4.89ms  65.38ms   75.27%
+    Req/Sec   140.38     30.76   202.00     75.00%
+  8398 requests in 30.05s, 0.94MB read
+Requests/sec:    279.50
+Transfer/sec:     31.93KB
 ```
 
 ---
