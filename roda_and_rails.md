@@ -30,7 +30,7 @@
 * Webアプリを作る為のフレームワーク
   * MVCにおけるView / Controller部分のみを提供
   * routing / controllerを定義するDSL的なもの
-* RailsというよりSinatraの仲間
+* RailsではなくSinatraの仲間
   * Sinatraと違い階層構造(木構造)でroutingを定義出来る
 
 ---
@@ -58,8 +58,7 @@ end
 * 作者は Jeremy Evans(@jeremyevans) https://github.com/jeremyevans
 * Sequel(DBアクセス用ライブラリ) author
 * OpenBSD Ruby ports maintainer
-* Rails的にはErubi(ERB Handler)
-* bugs.ruby-lang.org にも良く出現されてる
+* Rails的にはErubi(ERB Handler) author
 
 ---
 
@@ -83,9 +82,9 @@ https://rubykaigi.org/2019/presentations/jeremyevans0.html#apr20
 
 ---
 
-# Roda is fast
+# Roda
 
-* Rodaは特徴の1つに他のフレームワークと比べて、速いというのがある
+* Rodaは特徴の1つに速度がある
 
 ---
 
@@ -97,11 +96,12 @@ http://roda.jeremyevans.net/
 
 ---
 
-# Rails is slow?
+# Roda is fast
 
 * (そもそも速度ってWebサービス毎に求められるものは違うしフレームワークの処理だけじゃなくネットワークやDB等の諸々考慮すべきだよね、みたいな話は一旦置いておいて)
 * 上のベンチマークは[luislavena/bench-micro](https://github.com/luislavena/bench-micro)の結果
-* これだけみるとRails遅そうっすね
+  * "Hello World!"を返すだけのアプリ
+* これだけみるとRails遅い
 * 他のベンチマークも見てみたい
 
 ---
@@ -120,7 +120,7 @@ http://roda.jeremyevans.net/
   * データベース(MySQL、PostgreSQL、MongoDB、等々)やアプリケーションサーバも複数パターン(Puma、unicorn、等々)で行っている
 * Full-stack frameworksだけじゃなくMicro frameworksも対象になっている
   * そもそも素のRackもFrameworkに含まれている
-  * その辺りも考慮して見てね
+  * その辺りも考慮して見てください
 
 ---
 
@@ -151,7 +151,7 @@ http://roda.jeremyevans.net/
 # Roda is fast?
 
 * Roda is à la carte
-  * (これは私が勝手に呼んでいるだけで公式で名乗っている訳ではない)
+  * これは私が勝手に呼んでいるだけで公式で名乗っている訳ではない
 * Rodaのcoreは本当に最低限の機能しか提供していない
   * デフォルトだとテンプレートのレンダリングも出来ない
 * 代わりに各種機能をpluginとして提供しており、使用する側で必要なpluginを選択する必要がある
@@ -174,15 +174,16 @@ end
 
 * デフォルトで全部入りのフレームワーク(Rails)とデフォルト最小構成のフレームワーク(Roda)を比較すればそれは勿論最小構成の方が速い
 * 勿論それ以外にもRodaには速度向上のための対応が色々と行われている
-  * この辺りの話はRubyKaigiで聞けそうな気がするんでみんな楽しみににしよう
+  * この辺りの話はRubyKaigiで聞けそうな気がするんでみんな楽しみにしよう
 
 ---
 
-# Roda and Rails
+# Roda or Rails
 
-* Rodaは速い。が、あくまでルーティングライブラリなので、実際これを使ってアプリを作ろうと思うと、Railsと比べると大変。
+* Rodaは速いが、あくまでルーティングライブラリなので、実際これを使ってアプリを作ろうと思うと、Railsと比べると当然大変
   * Railsのコマンドやrakeタスク、autoloadやreloadの仕組み、設定ファイル等に関する処理は提供されてないので自分で準備する必要がある
-* 上手いことRailsとRodaの良い所を組み合わせらないか?
+  * 当ディレクトリ構成等も考える必要がある
+* Railsの便利な部分と、Rodaの速い部分を上手いこと組み合わせられないか?
 
 ---
 
@@ -196,8 +197,10 @@ Rodaは"Routing Tree Web Framework Toolkit"なので、Routingについて考え
 
 * URLとcontrollerのactionとのマッピング
 * pathとURLのhelper
+* Viewの為のhelper(e.g. `url_for`)
 * scope(namespace)
-* 等々
+* constraints
+* journey
 
 ---
 
@@ -205,15 +208,17 @@ Rodaは"Routing Tree Web Framework Toolkit"なので、Routingについて考え
 
 * Rails Routerは多機能
 * 複雑なウェブアプリケーションを作成するためにはこれらの機能は必要だった(多分)
+* Rodaの標準のpluginでは、完全に同じ機能を提供する事は出来ない
 
 ---
 
-# 今はどうだろうね
+# 今はどうか
 
 * 元々の役割は変わらずあるが、それだけではなくなった
-* SPAアプリの場合、サーバ側はAPIだけで良い事もある
-  * その場合、そこまで複雑なRoutingが必要ではない
-* 例えばGraphQLの場合、POSTのエンドポイント一個あれば良い
+* SPAアプリの場合サーバ側はAPIだけで良い事もある
+  * その場合そこまで複雑なRoutingが必要ではない
+  * helperメソッドも無くても良い
+* 例えばGraphQLの場合、POSTのエンドポイントが1つあれば良い
 
 ---
 
@@ -240,26 +245,8 @@ end
 # Roda on Rails
 
 * Rodaは当然Rackベース
-* Rackベースのアプリケーション`mount`メソッドを使えばRailsのroutingで使える
+* Rackベースのアプリケーションは`mount`メソッドを使えばRailsのroutingで使える
   * https://edgeapi.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-mount
-
----
-
-# Roda Application
-
-```ruby {style="font-size: 12p"}
-class RodaRoutes < Roda
-  # Rodaのrouting処理
-end
-```
-
-```ruby {style="font-size: 12p"}
-# routes.rb
-Rails.application.routes.draw do
-  post "/graphql", to: "graphql#execute"
-  mount RodaRoutes.freeze.app => "/roda"
-end
-```
 
 ---
 
@@ -304,19 +291,43 @@ end
 
 ---
 
+# Roda Application
+
+```ruby {style="font-size: 12p"}
+class RodaRoutes < Roda
+  # ...
+end
+```
+
+```ruby {style="font-size: 12p"}
+# routes.rb
+Rails.application.routes.draw do
+  post "/graphql", to: "graphql#execute"
+  mount RodaRoutes.freeze.app => "/roda"
+end
+```
+
+---
+
 # 性能検証
 
 * とりあえず動く状態になったので性能検証してみよう
+* 各エンドポイントに対して結果が1件だけ取得できるqueryをPOST
+* 先に提示した以外のコードは完全に一緒
 * ベンチマークツールは wrk(https://github.com/wg/wrk)を使用
-  * Rails / Roda両方のエンドポイントに対してGraphQLのリクエストを実施
 * 10 threads / 100 connectionsで30s
+
+---
+# 性能検証
+
+* Rails: 6.0.0.beta3, Roda: 3.18.0
 * CPU: Intel® Core™ M-5Y71 Processor (4M Cache, up to 2.90 GHz) 、メモリ: 8Gのマシンで検証
 
 ---
 
 # 性能検証
 
-**Rails result**
+**Rails**
 
 ``` {style="font-size: 14p"}
   10 threads and 100 connections
@@ -330,7 +341,7 @@ Transfer/sec:     99.55KB
 
 {.column}
 
-**Roda result**
+**Roda**
 
 ``` {style="font-size: 14p"}
   10 threads and 100 connections
@@ -352,14 +363,14 @@ Transfer/sec:     64.18KB
 
 # 他のパターンも試してみよう
 
-先のパターンではRailsのrouterはそのまま使用したが、そこを変えたらどうなるか
+先のパターンではRailsのrouterはそのまま使用したがそこを変えたらどうなるか
 
 ---
 
 # Railsアプリケーション
 
 * RailsアプリケーションもまたRackアプリケーション
-* Railsアプリケーションは、HTTP requestがくるとRack Middlewareで処理を実施し、最後にRouterで処理を行う
+* RailsアプリケーションはHTTP requestがくるとRack Middlewareの処理を実施し、最後にRouterで処理を行う
 
 ---
 
@@ -371,33 +382,9 @@ Transfer/sec:     64.18KB
 
 # Rails application
 
-* このRouter(実際のクラスは`ActionDispatch::Routing::RouteSet`)は差し替え可能
+* Router(実際のクラスは`ActionDispatch::Routing::RouteSet`)は差し替え可能
   * 内部的には"endpoint"という表現を使用している
-
----
-
-# Rails application
-
-```ruby {style="font-size: 12p"}
-# Returns the underlying Rack application for this engine.
-def app
-  @app || @app_build_lock.synchronize {
-    @app ||= begin
-      stack = default_middleware_stack
-      config.middleware = build_middleware.merge_into(stack)
-      config.middleware.build(endpoint)
-    end
-  }
-end
-
-# Returns the endpoint for this engine. If none is registered,
-# defaults to an ActionDispatch::Routing::RouteSet.
-def endpoint
-  self.class.endpoint || routes
-end
-```
-
-https://github.com/rails/rails/blob/870377915af301c98a54f7f588e077610b2190aa/railties/lib/rails/engine.rb#L503-L518
+* https://edgeapi.rubyonrails.org/classes/Rails/Engine.html のdocに説明がある
 
 ---
 
@@ -422,12 +409,8 @@ end
 
 # Rack Middlewares
 
----
-
-# Rack Middlewares
-
 * Railsアプリケーションは様々なRack Middlewaresを使用している
-* 使用しているmiddlewareの一覧は`rails middleware`で確認出来る
+* 使用しているmiddlewareの一覧は`rails middleware`コマンドで確認出来る
 
 ---
 
@@ -540,3 +523,4 @@ Transfer/sec:     31.93KB
 * Rails is omakase
 * とはいえメニューは変えられる
 * 自分達のアプリケーションに合わせて、適切にメニューを選べるようになると、それはそれで便利で良いんじゃないでしょうか
+* Rodaでアプリケーションを作る方法について知りたい方は、"First step of Roda"という同人誌を去年書いたのでそれを見て下さい
