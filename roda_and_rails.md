@@ -16,7 +16,7 @@
 # 今日お話すること
 
 * Rodaというフレームワークについての紹介
-* Railsをお使い(であろう)皆さんへのRodaのすゝめ
+* Railsをお使い(であろう)皆さんへのRodaの使いドコロ
 
 ---
 
@@ -37,7 +37,7 @@
 
 # Roda
 
-```ruby {style="font-size: 16p"}
+```ruby {style="font-size: 14p"}
 route do |r|
   r.is 'artist/:id' do |artist_id|
     r.get do
@@ -151,7 +151,6 @@ http://roda.jeremyevans.net/
 # Roda is fast?
 
 * Roda is à la carte
-  * これは私が勝手に呼んでいるだけで公式で名乗っている訳ではない
 * Rodaのcoreは本当に最低限の機能しか提供していない
   * デフォルトだとテンプレートのレンダリングも出来ない
 * 代わりに各種機能をpluginとして提供しており、使用する側で必要なpluginを選択する必要がある
@@ -193,7 +192,7 @@ Rodaは"Routing Tree Web Framework Toolkit"なので、Routingについて考え
 
 ---
 
-# RailsのRouter
+# Rails Router
 
 * URLとcontrollerのactionとのマッピング
 * pathとURLのhelper
@@ -206,7 +205,7 @@ Rodaは"Routing Tree Web Framework Toolkit"なので、Routingについて考え
 
 # Rails Router
 
-* Rails Routerは多機能
+* RailsのRouterは多機能
 * 複雑なウェブアプリケーションを作成するためにはこれらの機能は必要だった(多分)
 * Rodaの標準のpluginでは、完全に同じ機能を提供する事は出来ない
 
@@ -353,8 +352,6 @@ mount| 229.78|21.76ms|
 
 ---
 
-# Rails application
-
 ![](http://drive.google.com/uc?export=view&id=1kOC6gbyTG9VLJRGpS5ohpNuVFymDv7an)
 
 ---
@@ -369,7 +366,7 @@ mount| 229.78|21.76ms|
 
 # endpoint
 
-```
+```ruby
 # config/application.rb
 class Application < Rails::Application
   endpoint RodaRoutes.freeze.app
@@ -419,9 +416,9 @@ use Rack::ETag
 
 # Rack Middlewares
 
-* 色々ある
-* しかし要らないmiddlewareもあるのでは
-  * 例えば`Rack::Sendfile`はX-Sendfile header設定する為のmiddlewareだが、ファイルアップロード処理が無いアプリケーションなら要らないよね
+* デフォルトは全部入り
+* しかし要らないmiddlewareもある
+  * 例えば`Rack::Sendfile`はX-Sendfile header設定する為のmiddlewareだが、ファイルアップロード処理が無いアプリケーションなら要らない
 
 ---
 
@@ -429,7 +426,7 @@ use Rack::ETag
 
 使わないMiddlewareは個別に削除出来る
 
-```
+```ruby
 # config/application.rb
 class Application < Rails::Application
   config.middleware.delete Rack::Sendfile
@@ -441,14 +438,15 @@ end
 
 # Rack Middlewares
 
+* まとめて削除機能は(public APIには)無い
 * RodaにもRack middlewareを使用する機能はある
-* Rodaで必要なRack middlewareだけを個別に指定すれば、そもそもRequestの処理にRailsアプリケーションを使う必要はない
+* Rodaで必要なRack middlewareだけを個別に指定すれば、そもそもRequestの処理にRailsアプリケーションを使う必要はないのでは?
 
 ---
 
 # Roda
 
-```
+```ruby
 class RodaRoutes < Roda
   use Rack::JWT::Auth
   use ActionDispatch::RequestId
