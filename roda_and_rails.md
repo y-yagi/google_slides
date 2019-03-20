@@ -327,31 +327,10 @@ end
 
 # 性能検証
 
-**Rails**
-
-``` {style="font-size: 14p"}
-  10 threads and 100 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    26.20ms    7.52ms  73.32ms   73.87%
-    Req/Sec   191.41     16.16   222.00     73.75%
-  5744 requests in 30.09s, 2.93MB read
-Requests/sec:    190.89
-Transfer/sec:     99.55KB
-```
-
-{.column}
-
-**Roda**
-
-``` {style="font-size: 14p"}
-  10 threads and 100 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    21.76ms    5.81ms  60.93ms   76.23%
-    Req/Sec   230.66     16.43   260.00     79.07%
-  6916 requests in 30.10s, 1.89MB read
-Requests/sec:    229.78
-Transfer/sec:     64.18KB
-```
+||Requests/sec|Latency(Avg)|
+------------ | -------------| -------------
+Rails | 190.89|26.20ms|
+mount| 229.78|21.76ms|
 
 ---
 
@@ -401,9 +380,11 @@ end
 
 # endpoint
 
-* 結論からいうとこのアプローチではあまり速くならなかった
-  * `mount`を使った場合と同じ程度の速度
-* 次行ってみよう
+|| Requests/sec|Latency(Avg)|
+------------ | -------------| -------------
+Rails | 190.89|26.20ms|
+mount| 229.78|21.76ms|
+endpoint|227.25|22.00ms|
 
 ---
 
@@ -458,21 +439,10 @@ end
 
 ---
 
-# Rails application
+# Rack Middlewares
 
-* RodaにもRack middlewareを指定する機能はある
-* Rodaで必要なRack middlewareだけを個別に指定すれば、そもそもRequestの処理にRailsアプリケーションは不要なのでは?
-
----
-
-# config.ru
-
-```diff
-require_relative 'config/environment'
-
-- run Rails.application
-+ run RodaRoutes.freeze.app
-```
+* RodaにもRack middlewareを使用する機能はある
+* Rodaで必要なRack middlewareだけを個別に指定すれば、そもそもRequestの処理にRailsアプリケーションを使う必要はない
 
 ---
 
@@ -489,32 +459,73 @@ end
 
 ---
 
+# config.ru
+
+```diff
+require_relative 'config/environment'
+
+- run Rails.application
++ run RodaRoutes.freeze.app
+```
+
+---
+
 # 性能検証
 
-**Rails result**
+|| Requests/sec|Latency(Avg)|
+------------ | -------------| -------------
+Rails | 190.89|26.20ms|
+mount| 229.78|21.76ms|
+endpoint|227.25|22.00ms|
+Roda|281.94|17.74ms|
 
-``` {style="font-size: 14p"}
-  10 threads and 100 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    26.20ms    7.52ms  73.32ms   73.87%
-    Req/Sec   191.41     16.16   222.00     73.75%
-  5744 requests in 30.09s, 2.93MB read
-Requests/sec:    190.89
+---
+
+# Roda
+
+* 割と速くなった
+* ただこれだと全てのリクエストがRodaにいくので、RailsのRouterを使用していた場合、それらを全てRodaに移植する必要がある
+  * 割と大変
+* もうちょっと改善したい
+
+---
+
+# Rackアプリケーション
+
+* Rackサーバ起動時に指定出来るRackアプリケーションは1つ
+* なら、ルートに応じてRackアプリケーションを切り替えるRackアプリケーションがあれば良いのでは?
+
+
+---
+
+# railroad-switch
+
+* 探したところそういうライブラリは無かった
+* 無いなら作れば良いよね
+  * https://github.com/y-yagi/railroad-switch
+
+---
+
+# config.ru
+
+```ruby
+Railroad::Switch.fallback_to = Rails.application
+Railroad::Switch.register(path: "/roda/graphql", app: RodaRoutes.freeze.app)
+run Railroad::Switch.app
 ```
 
-{.column}
+---
 
-**Roda result(今回の結果)**
+# 性能検証
 
-``` {style="font-size: 14p"}
-  10 threads and 100 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    17.85ms    4.89ms  65.38ms   75.27%
-    Req/Sec   140.38     30.76   202.00     75.00%
-  8398 requests in 30.05s, 0.94MB read
-Requests/sec:    279.50
-Transfer/sec:     31.93KB
-```
+|| Requests/sec|Latency(Avg)|
+------------ | -------------| -------------
+Rails | 190.89|26.20ms|
+mount| 229.78|21.76ms|
+endpoint|227.25|22.00ms|
+Roda|281.94|17.74ms|
+Rails(SW)|188.27|26.52ms|
+Roda(SW)|281.11|17.76ms|
 
 ---
 
