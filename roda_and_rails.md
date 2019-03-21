@@ -32,12 +32,13 @@
   * routing / controllerを定義するDSL的なもの
 * RailsではなくSinatraの仲間
   * Sinatraと違い階層構造(木構造)でroutingを定義出来る
+  * Railsにおけるroutesとcontrollerをまとめて定義する
 
 ---
 
 # Roda
 
-```ruby {style="font-size: 14p"}
+```ruby {style="font-size: 12p"}
 route do |r|
   r.is 'artist/:id' do |artist_id|
     r.get do
@@ -66,7 +67,7 @@ end
 
 ![](http://drive.google.com/uc?export=view&id=1ZW030sbr-LC1riwFSqAVM3ejjs1b-IAw)
 
-https://rubykaigi.org/2019/speakers
+[https://rubykaigi.org/2019/speakers](https://rubykaigi.org/2019/speakers)
 
 ---
 
@@ -74,7 +75,7 @@ https://rubykaigi.org/2019/speakers
 
 ![](http://drive.google.com/uc?export=view&id=1NYtjgWwgdPNawDhL0xBlZxEyDHZkFTQa)
 
-https://rubykaigi.org/2019/presentations/jeremyevans0.html#apr20
+[https://rubykaigi.org/2019/presentations/jeremyevans0.html#apr20](https://rubykaigi.org/2019/presentations/jeremyevans0.html#apr20)
 
 ---
 
@@ -82,33 +83,30 @@ https://rubykaigi.org/2019/presentations/jeremyevans0.html#apr20
 
 ---
 
-# Roda
-
-* Rodaは特徴の1つに速度がある
+# はやい
 
 ---
 
-# Roda is fast
+# Roda
 
 ![](http://drive.google.com/uc?export=view&id=13KekYhxZ82d9S1bQNVVx7Lgy7RiqAP__)
 
-http://roda.jeremyevans.net/
+[http://roda.jeremyevans.net/](http://roda.jeremyevans.net/)
 
 ---
 
 # Roda is fast
 
-* (そもそも速度ってWebサービス毎に求められるものは違うしフレームワークの処理だけじゃなくネットワークやDB等の諸々考慮すべきだよね、みたいな話は一旦置いておいて)
-* 上のベンチマークは[luislavena/bench-micro](https://github.com/luislavena/bench-micro)の結果
+* ベンチマークは[luislavena/bench-micro](https://github.com/luislavena/bench-micro)の結果
   * "Hello World!"を返すだけのアプリ
 * これだけみるとRails遅い
-* 他のベンチマークも見てみたい
+* 他のベンチマークもみたい
 
 ---
 
 # Web Framework Benchmarks
 
-* TechEmpower社がおこなっているWeb Framework Benchmarks(https://www.techempower.com/benchmarks/) というベンチマークがある
+* TechEmpower社がおこなっているWeb Framework Benchmarks([https://www.techempower.com/benchmarks/](https://www.techempower.com/benchmarks/)) というベンチマークがある
 * ここはRubyに限らず様々なプログラミング言語のWebアプリケーションのフレームワークのパフォーマンス比較を行っている
   * ベンチマークは定期的に取得するようになっており最新(Round 17 / 2018-10-30)では、28のプログラミング言語 / 179のフレームワークを対象に実施
 
@@ -126,8 +124,8 @@ http://roda.jeremyevans.net/
 
 # Web Framework Benchmarks
 
-* ベンチマークを取るのに使用したソースも公開されているので、興味がある方はそちらもどうぞ
-  * https://github.com/TechEmpower/FrameworkBenchmarks
+* ベンチマークを取るのに使用したソースも公開されているので、興味がある方は合わせてどうぞ
+  * [https://github.com/TechEmpower/FrameworkBenchmarks](https://github.com/TechEmpower/FrameworkBenchmarks)
 
 ---
 
@@ -135,7 +133,7 @@ http://roda.jeremyevans.net/
 
 * JSON serializationの結果を見てみると、Railsは290 / 328
   * Rubyの中で最下位
-  * https://www.techempower.com/benchmarks/#section=data-r17&hw=cl&test=json&l=zijxtr-1
+  * [https://www.techempower.com/benchmarks/#section=data-r17&hw=cl&test=json&l=zijxtr-1](https://www.techempower.com/benchmarks/#section=data-r17&hw=cl&test=json&l=zijxtr-1)
 * Roda(+ Sequel)は上位
 
 ---
@@ -143,7 +141,7 @@ http://roda.jeremyevans.net/
 # Roda is fast?
 
 * そもそも提供している機能が違うので単純に比較するべきではない
-* もちろんMicro frameworksだと速くなる、というわけではないが
+  * もちろん提供している機能が少ないと速くなる、というわけではないが
   * DjangoとflaskだとDjangoの方が上にいたりする
 
 ---
@@ -154,6 +152,7 @@ http://roda.jeremyevans.net/
 * Rodaのcoreは本当に最低限の機能しか提供していない
   * デフォルトだとテンプレートのレンダリングも出来ない
 * 代わりに各種機能をpluginとして提供しており、使用する側で必要なpluginを選択する必要がある
+  * 90以上のpluginが提供されている(Roda 3.18時点)
 
 ---
 
@@ -171,7 +170,7 @@ end
 
 # Roda is fast?
 
-* デフォルトで全部入りのフレームワーク(Rails)とデフォルト最小構成のフレームワーク(Roda)を比較すればそれは勿論最小構成の方が速い
+* デフォルトで全部入りのライブラリ(Rails)とデフォルト最小構成のライブラリ(Roda)を比較すればそれは勿論最小構成の方が速い
 * 勿論それ以外にもRodaには速度向上のための対応が色々と行われている
   * この辺りの話はRubyKaigiで聞けそうな気がするんでみんな楽しみにしよう
 
@@ -179,16 +178,14 @@ end
 
 # Roda or Rails
 
-* Rodaは速いが、あくまでルーティングライブラリなので、実際これを使ってアプリを作ろうと思うと、Railsと比べると当然大変
+* Rodaは速いが、あくまでルーティングライブラリなので、Rodaを使ってWebアプリケーションを作るとRailsと比べると当然大変
   * Railsのコマンドやrakeタスク、autoloadやreloadの仕組み、設定ファイル等に関する処理は提供されてないので自分で準備する必要がある
-  * 当ディレクトリ構成等も考える必要がある
+  * ディレクトリ構成や、テストについても考える必要がある
 * Railsの便利な部分と、Rodaの速い部分を上手いこと組み合わせられないか?
 
 ---
 
-# Rails Router{.big}
-
-Rodaは"Routing Tree Web Framework Toolkit"なので、Routingについて考えてみる
+# Rodaは"Routing Tree Web Framework Toolkit"なのでRouterについて考えてみる
 
 ---
 
@@ -196,9 +193,8 @@ Rodaは"Routing Tree Web Framework Toolkit"なので、Routingについて考え
 
 * URLとcontrollerのactionとのマッピング
 * pathとURLのhelper
-* Viewの為のhelper(e.g. `url_for`)
-* scope(namespace)
-* constraints
+* viewの為のhelper(e.g. `url_for`)
+* scope(namespace)、constraints
 * journey
 
 ---
@@ -207,7 +203,7 @@ Rodaは"Routing Tree Web Framework Toolkit"なので、Routingについて考え
 
 * RailsのRouterは多機能
 * 複雑なウェブアプリケーションを作成するためにはこれらの機能は必要だった(多分)
-* Rodaの標準のpluginでは、完全に同じ機能を提供する事は出来ない
+  * 因みにRodaの標準のpluginでは、完全に同じ機能を提供する事は出来ない
 
 ---
 
@@ -245,7 +241,7 @@ end
 
 * Rodaは当然Rackベース
 * Rackベースのアプリケーションは`mount`メソッドを使えばRailsのroutingで使える
-  * https://edgeapi.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-mount
+  * [https://edgeapi.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-mount](https://edgeapi.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-mount)
 
 ---
 
@@ -292,13 +288,7 @@ end
 
 # Roda Application
 
-```ruby {style="font-size: 12p"}
-class RodaRoutes < Roda
-  # ...
-end
-```
-
-```ruby {style="font-size: 12p"}
+```ruby {style="font-size: 14p"}
 # routes.rb
 Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
@@ -310,13 +300,14 @@ end
 
 # 性能検証
 
-* とりあえず動く状態になったので性能検証してみよう
-* 各エンドポイントに対して結果が1件だけ取得できるqueryをPOST
+* 動く状態になったので性能検証してみよう
+* Rails、Roda、それぞれのルートに対して結果が1件だけ取得できるqueryをPOST
 * 先に提示した以外のコードは完全に一緒
 * ベンチマークツールは wrk(https://github.com/wg/wrk)を使用
-* 10 threads / 100 connectionsで30s
+* 10 threads / 100 connectionsを30s
 
 ---
+
 # 性能検証
 
 * Rails: 6.0.0.beta3, Roda: 3.18.0
@@ -335,7 +326,7 @@ mount| 229.78|21.76ms|
 
 # 性能検証
 
-* RailsにそのままRodaのっけただけでも多少速くなる
+RailsにそのままRodaのっけただけでも多少速くなる
 
 ---
 
@@ -348,19 +339,44 @@ mount| 229.78|21.76ms|
 # Railsアプリケーション
 
 * RailsアプリケーションもまたRackアプリケーション
-* RailsアプリケーションはHTTP requestがくるとRack Middlewareの処理を実施し、最後にRouterで処理を行う
+* Railsアプリケーションはリクエストがくると、Rackミドルウェアの処理を実施し、最後にRouterの処理を行う
 
 ---
+
+# Railsアプリケーション
 
 ![](http://drive.google.com/uc?export=view&id=1kOC6gbyTG9VLJRGpS5ohpNuVFymDv7an)
 
 ---
 
-# Rails application
+# Railsアプリケーション
 
-* Router(実際のクラスは`ActionDispatch::Routing::RouteSet`)は差し替え可能
+* Router(実際のクラスは`ActionDispatch::Routing::RouteSet`)はpublic APIで差し替え可能
   * 内部的には"endpoint"という表現を使用している
 * https://edgeapi.rubyonrails.org/classes/Rails/Engine.html のdocに説明がある
+
+---
+
+# Railsアプリケーション
+
+```ruby {style="font-size: 10p"}
+def app
+  @app || @app_build_lock.synchronize {
+    @app ||= begin
+      stack = default_middleware_stack
+      config.middleware = build_middleware.merge_into(stack)
+      config.middleware.build(endpoint)
+    end
+  }
+end
+
+def endpoint
+  self.class.endpoint || routes
+end
+
+```
+
+[https://github.com/rails/rails/blob/870377915af301c98a54f7f588e077610b2190aa/railties/lib/rails/engine.rb#L503-L518](https://github.com/rails/rails/blob/870377915af301c98a54f7f588e077610b2190aa/railties/lib/rails/engine.rb#L503-L518)
 
 ---
 
@@ -375,7 +391,7 @@ end
 ```
 ---
 
-# endpoint
+# 性能検証
 
 || Requests/sec|Latency(Avg)|
 ------------ | -------------| -------------
@@ -385,14 +401,14 @@ endpoint|227.25|22.00ms|
 
 ---
 
-# Rack Middlewares
+# Rackミドルウェア
 
-* Railsアプリケーションは様々なRack Middlewaresを使用している
-* 使用しているmiddlewareの一覧は`rails middleware`コマンドで確認出来る
+* Railsアプリケーションは様々なRackミドルウェアを使用している
+* 使用しているミドルウェアの一覧は`rails middleware`コマンドで確認出来る
 
 ---
 
-# Rack Middlewares(API-only)
+# Rackミドルウェア(API-only)
 
 ``` {style="font-size: 10p"}
 $ RAILS_ENV=production  ./bin/rails middleware
@@ -414,17 +430,17 @@ use Rack::ETag
 
 ---
 
-# Rack Middlewares
+# Rackミドルウェア
 
 * デフォルトは全部入り
-* しかし要らないmiddlewareもある
-  * 例えば`Rack::Sendfile`はX-Sendfile header設定する為のmiddlewareだが、ファイルアップロード処理が無いアプリケーションなら要らない
+* しかし要らないミドルウェアもある
+  * 例えば`Rack::Sendfile`はX-Sendfile header設定する為のミドルウェアだが、ファイルアップロード処理が無いアプリケーションなら要らない
 
 ---
 
-# Rack Middlewares
+# Rackミドルウェア
 
-使わないMiddlewareは個別に削除出来る
+使わないミドルウェアは個別に削除出来る
 
 ```ruby
 # config/application.rb
@@ -436,11 +452,11 @@ end
 
 ---
 
-# Rack Middlewares
+# Rackミドルウェア
 
 * まとめて削除機能は(public APIには)無い
-* RodaにもRack middlewareを使用する機能はある
-* Rodaで必要なRack middlewareだけを個別に指定すれば、そもそもRequestの処理にRailsアプリケーションを使う必要はないのでは?
+* Rodaにも当然Rackミドルウェアを使用する機能はある
+* Rodaで必要なRackミドルウェア だけを個別に指定すれば、そもそもHTTPリクエストの処理にRailsアプリケーションを使う必要はないのでは?
 
 ---
 
@@ -482,17 +498,16 @@ Roda|281.94|17.74ms|
 # Roda
 
 * 割と速くなった
-* ただこれだと全てのリクエストがRodaにいくので、RailsのRouterを使用していた場合、それらを全てRodaに移植する必要がある
+* ただこれだと全てのリクエストがRodaにいくので、RailsのRouterを使用していた場合、既に定義済みのルーティングを全てRodaに移植する必要がある
   * 割と大変
-* もうちょっと改善したい
+* もうちょっと楽したい
 
 ---
 
 # Rackアプリケーション
 
 * Rackサーバ起動時に指定出来るRackアプリケーションは1つ
-* なら、ルートに応じてRackアプリケーションを切り替えるRackアプリケーションがあれば良いのでは?
-
+* なら、ルーティングに応じてRackアプリケーションを切り替えるRackアプリケーションがあれば良いのでは
 
 ---
 
@@ -506,7 +521,7 @@ Roda|281.94|17.74ms|
 
 # config.ru
 
-```ruby
+```ruby {style="font-size: 14p"}
 Railroad::Switch.fallback_to = Rails.application
 Railroad::Switch.register(path: "/roda/graphql", app: RodaRoutes.freeze.app)
 run Railroad::Switch.app
@@ -529,7 +544,16 @@ Roda(SW)|281.11|17.76ms|
 
 # まとめ
 
-* Rails is omakase
-* とはいえメニューは変えられる
-* 自分達のアプリケーションに合わせて、適切にメニューを選べるようになると、それはそれで便利で良いんじゃないでしょうか
-* Rodaでアプリケーションを作る方法について知りたい方は、"First step of Roda"という同人誌を去年書いたのでそれを見て下さい
+* omakase is benri
+* omakaseが自分たちのアプリケーションと完全に一致するとは限らない
+* アプリケーションに合わせて、適切なメニューを選べるようになるとそれはそれで便利で良いんじゃないでしょうか
+* メニューの1つとして、Rodaを検討してみるのは如何でしょうか
+
+---
+
+# おまけ
+
+因みに、Rodaでアプリケーションを作る方法についてもうちょっと知りたい方は、"First step of Roda"という同人誌を去年書いたのでそれを見て頂ければと
+
+https://github.com/y-yagi/roda-first/blob/master/book.pdf
+
