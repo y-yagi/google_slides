@@ -32,7 +32,6 @@
   * routing / controllerを定義するDSL的なもの
 * RailsではなくSinatraの仲間
   * Sinatraと違い階層構造(木構造)でroutingを定義出来る
-  * Railsにおけるroutesとcontrollerをまとめて定義する
 
 ---
 
@@ -131,17 +130,16 @@ end
 
 # Web Framework Benchmarks
 
-* JSON serializationの結果を見てみると、Railsは290 / 328
-  * Rubyの中で最下位
+* 例えばJSON serializationの結果を見てみるとRoda(+ Sequel)は上位
   * [https://www.techempower.com/benchmarks/#section=data-r17&hw=cl&test=json&l=zijxtr-1](https://www.techempower.com/benchmarks/#section=data-r17&hw=cl&test=json&l=zijxtr-1)
-* Roda(+ Sequel)は上位
+* DBアクセスが絡む処理だとRubyではTOP
 
 ---
 
 # Roda is fast?
 
 * そもそも提供している機能が違うので単純に比較するべきではない
-  * もちろん提供している機能が少ないと速くなる、というわけではないが
+  * もちろん提供している機能が少ないと速くなる、というわけではない
   * DjangoとflaskだとDjangoの方が上にいたりする
 
 ---
@@ -151,8 +149,8 @@ end
 * Roda is à la carte
 * Rodaのcoreは本当に最低限の機能しか提供していない
   * デフォルトだとテンプレートのレンダリングも出来ない
-* 代わりに各種機能をpluginとして提供しており、使用する側で必要なpluginを選択する必要がある
-  * 90以上のpluginが提供されている(Roda 3.18時点)
+* 代わりに各種機能をpluginとして提供しており、使用する側でpluginを選択する必要がある
+  * 90以上のpluginが提供されている(Roda 3.18.0時点)
 
 ---
 
@@ -178,8 +176,9 @@ end
 
 # Roda or Rails
 
-* Rodaは速いが、あくまでルーティングライブラリなので、Rodaを使ってWebアプリケーションを作るとRailsと比べると当然大変
-  * Railsのコマンドやrakeタスク、autoloadやreloadの仕組み、設定ファイル等に関する処理は提供されてないので自分で準備する必要がある
+* Rodaは速そう
+* が、あくまでルーティングライブラリなので、Rodaを使ってWebアプリケーションを作るとRailsと比べると当然大変
+  * Railsのコマンドやrakeタスク、autoloadやreloadの仕組み、設定ファイル等々の処理を自分で準備する必要がある
   * ディレクトリ構成や、テストについても考える必要がある
 * Railsの便利な部分と、Rodaの速い部分を上手いこと組み合わせられないか?
 
@@ -193,9 +192,9 @@ end
 
 * URLとcontrollerのactionとのマッピング
 * pathとURLのhelper
-* viewの為のhelper(e.g. `url_for`)
 * scope(namespace)、constraints
 * journey
+* etc
 
 ---
 
@@ -207,10 +206,11 @@ end
 
 ---
 
-# 今はどうか
+# Rails Router
 
+* しかし今はどうか
 * 元々の役割は変わらずあるが、それだけではなくなった
-* SPAアプリの場合サーバ側はAPIだけで良い事もある
+* SPAアプリの場合サーバ側はAPIだけ
   * その場合そこまで複雑なRoutingが必要ではない
   * helperメソッドも無くても良い
 * 例えばGraphQLの場合、POSTのエンドポイントが1つあれば良い
@@ -219,7 +219,7 @@ end
 
 # GraphQL
 
-GraphQL Rubyをつかう場合
+graphql gemをつかう場合
 
 ```ruby
 Rails.application.routes.draw do
@@ -234,6 +234,10 @@ end
 * URLとcontrollerのaction(というか、何らかの処理)と紐付けだけ出来れば良い
 * 多機能なRouterは不要そう
 * それならRodaを使えないか?
+
+---
+
+# Roda on Rails
 
 ---
 
@@ -301,8 +305,8 @@ end
 # 性能検証
 
 * 動く状態になったので性能検証してみよう
-* Rails、Roda、それぞれのルートに対して結果が1件だけ取得できるqueryをPOST
-* 先に提示した以外のコードは完全に一緒
+* Rails、Roda、それぞれのGraphQLの用のURLに対してqueryをPOST
+  * 先に提示した以外のコードは完全に一緒
 * ベンチマークツールは wrk(https://github.com/wg/wrk)を使用
 * 10 threads / 100 connectionsを30s
 
@@ -500,7 +504,7 @@ Roda|281.94|17.74ms|
 * 割と速くなった
 * ただこれだと全てのリクエストがRodaにいくので、RailsのRouterを使用していた場合、既に定義済みのルーティングを全てRodaに移植する必要がある
   * 割と大変
-* もうちょっと楽したい
+* もうちょっと楽にはじめたい
 
 ---
 
@@ -521,9 +525,9 @@ Roda|281.94|17.74ms|
 
 # config.ru
 
-```ruby {style="font-size: 14p"}
-Railroad::Switch.fallback_to = Rails.application
+```ruby {style="font-size: 12p"}
 Railroad::Switch.register(path: "/roda/graphql", app: RodaRoutes.freeze.app)
+Railroad::Switch.fallback_to = Rails.application
 run Railroad::Switch.app
 ```
 
@@ -545,9 +549,9 @@ Roda(SW)|281.11|17.76ms|
 # まとめ
 
 * omakase is benri
-* omakaseが自分たちのアプリケーションと完全に一致するとは限らない
+* omakaseが自分たちのアプリケーションの期待するものと完全に一致するとは限らない
 * アプリケーションに合わせて、適切なメニューを選べるようになるとそれはそれで便利で良いんじゃないでしょうか
-* メニューの1つとして、Rodaを検討してみるのは如何でしょうか
+* そのメニューの1つとして、Rodaを検討してみるのは如何でしょうか
 
 ---
 
